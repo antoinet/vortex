@@ -1,4 +1,6 @@
-output:
+This level is quite straightforward, it's a good way to get confortable with sockets programming in C. Check out [Beej's Guide to C Programming](http://beej.us/guide/bgc/) as well as [Beej's Guide to Network Programming](http://beej.us/guide/bgnet/).
+
+Here's the output you get running the code in vortex.c:
 
     $ vortex/vortex0 > gcc vortex0.c -o vortex0
     $ vortex/vortex0 > ./vortex0 
