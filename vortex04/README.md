@@ -24,8 +24,8 @@ The next difficulty is to locate the format string in memory. Unlike the example
 I wrote some sample programs that display the memory addresses of environment variables, to get a hint of where the shellcode would be located in the process memory (see `getenv.c` and `listenv.c`). This is roughly around `0xffffdXXX`.
 
 Next step consists in choosing a memory location that will ultimately alter `%eip`'s value. I chose to overwrite the GOT's entry for libc's `exit()`, which is called at the end of the vulnerable program:
+
      $ readelf -r /vortex/vortex4 
-     
      Relocation section '.rel.dyn' at offset 0x28c contains 1 entries:
       Offset     Info    Type            Sym.Value  Sym. Name
      08049ff0  00000106 R_386_GLOB_DAT    00000000   __gmon_start__
