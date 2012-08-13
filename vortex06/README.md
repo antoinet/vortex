@@ -1,5 +1,6 @@
 vortex level 6 consists in reverse engineering the binary executable. objdump provides
 a very good decompiler function:
+
     $ objdump -d vortex6.bin
 
     08048424 <restart>:
@@ -39,6 +40,7 @@ a very good decompiler function:
 
 
 Again, I use a execve-wrapper to control which arguments to pass to the process (see `v6_wrapper.c`):
+
     vortex6@melissa:/tmp$ ./v6_wrapper
     $ cat /etc/vortex_pass/vortex7
     Y52jxHtt/
