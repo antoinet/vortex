@@ -14,11 +14,14 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "crc32_table.h"
 
 #define CRCPOLY  0xEDB88320
 #define CRCINV   0x5B358FD3 // inverse poly of (x^N) mod CRCPOLY
-#define INITXOR  0xFFFFFFFF
-#define FINALXOR 0xFFFFFFFF
+//#define INITXOR  0xFFFFFFFF
+#define INITXOR  0x00000000
+//#define FINALXOR 0xFFFFFFFF
+#define FINALXOR 0x00000000
 typedef unsigned int uint32;
 
 /**
@@ -59,10 +62,11 @@ int crc32_tabledriven(unsigned char *buffer, int length, uint32 *crc_table) {
 
 
 int main(int argc, char* argv[]) {
-	uint32 crc_table[256];
+//	uint32 crc_table[256];
+	uint32 *crc_table = (uint32 *)crc32_table;
 	int crc32;
 
-	make_crc_table(crc_table);
+//	make_crc_table(crc_table);
 	crc32 = crc32_tabledriven(argv[1], strlen(argv[1]), crc_table);
 	printf("0x%08X\n", crc32);
 
