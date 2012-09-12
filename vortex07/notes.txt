@@ -1,0 +1,17 @@
+VORTEX7 notes
+
+test: crc32("asdf") = 0x5129F3BD
+
+crc32 tbl offset: 0x80485e0 (situated in .rodata section)
+
+extract crc32 table from binary:
+
+readelf -x .rodata vortex7 | less
+
+# copy contents of .rodata into a binary file
+objcopy -O binary -j .rodata -S -v vortex7 rodata
+
+# truncate 32bytes at beginning of file
+dd bs=1 skip=32 if=rodata of=crc32_table
+
+vortex7 uses crc32 with INITXOR=0x0 and FINALXOR=0x0
