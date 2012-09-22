@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <arpa/inet.h>
-#include "hexdump.h"
+#include "../utils/hexdump.h"
 
 int main (int argc, char* argv[]) {
 	int i;
