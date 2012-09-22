@@ -4,6 +4,7 @@ all: shellcode.h
 
 shellcode.h: shellcode.bin
 	$(MSFHOME)/msfencode -e x86/call4_dword_xor -t c -i shellcode.bin -o shellcode.h
+	$(SED) -i 's/buf/shellcode/g' shellcode.h
 
 shellcode.bin: shellcode.o
 	$(OBJCOPY) -O binary -j .text -S shellcode.o shellcode.bin
