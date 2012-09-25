@@ -52,6 +52,14 @@ to redirect the execution of the program to any executable location in memory.
 Making the Shellcode
 --------------------
 
+The payload we want to execute consists in a small fragment of x86 machine instructions, which perform
+2-3 syscalls that allow us to run a shell:
+* `geteuid()`/`setreuid()` are used to set the effective user-id. The exploited binary runs with 
+   the suid-bit, which means the process is executed in the name of the file owner (the user that
+   has read-privileges for the next level's password file).
+* `execve()` is called to run */bin/bash*.
+
+The original x86/asm code can be found here.
 
 
 Executing arbitrary code
