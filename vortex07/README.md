@@ -5,7 +5,7 @@ The vulnerability exposed in [vortex level 7](http://www.overthewire.org/wargame
 basic buffer overflow with two subtleties:
 
 1. The CRC of the buffer must equate to a given value (0xe1ca95ee)
-2. The buffer is quite small (58 bytes)
+2. The buffer is rather small (58 bytes)
 
 
 Manipulating the checksum
@@ -13,8 +13,8 @@ Manipulating the checksum
 
 The [cyclic redundancy check (CRC)](http://en.wikipedia.org/wiki/Cyclic_redundancy_check) computes a check 
 value (or checksum), which is used to detect *accidental* changes in data, e.g. when transmitting over 
-unreliable communication channels. With this error detecting code, the slightest error (i.e. bit-flip) in 
-the input data results in a very different output. As opposed to 
+unreliable communication channels. With this error detecting code, the slightest change (i.e. bit-flip) in 
+the input data results in a very different output pattern. As opposed to 
 [cryptographic hash functions](http://en.wikipedia.org/wiki/Cryptographic_hash_function) like SHA1 or MD5, 
 preimage resistance is not a property of CRC, it is not designed to withstand 
 [preimage attacks](http://en.wikipedia.org/wiki/Preimage_attack): given a checksum *C*, it is not hard to 
