@@ -36,7 +36,7 @@ This level contains a classic vulnerability which can easily be exploited to exe
 [buffer overflow][wiki-buffer-overflow]. The use of the `strcpy` standard library
 function to copy a buffer of data to another completely disregards the destination's capacity. If the
 source buffer is larger than the destination, all bytes will be copied, even though the destination's
-bound has been exceeded, and in doing so, subsequent structures in memory will be destructed.
+bound has been exceeded, and in doing so, subsequent structures in memory will be destroyed.
 
 Intercepting the instruction pointer
 ------------------------------------
