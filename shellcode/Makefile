@@ -10,7 +10,7 @@ shellcode.bin: shellcode.o
 	$(OBJCOPY) -O binary -j .text -S shellcode.o shellcode.bin
 
 shellcode.o: shellcode.s
-	$(AS) -o shellcode.o shellcode.s
+	$(AS) --32 -march=i386 -o shellcode.o shellcode.s
 
 clean:
 	rm shellcode.o shellcode.bin shellcode.h
