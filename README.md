@@ -1,4 +1,4 @@
-This project is an attempt to solve the [Vortex Wargame](http://www.overthewire.org/wargames/vortex/).
+This project is an attempt to solve overthewire's [Vortex wargame](http://www.overthewire.org/wargames/vortex/).
 
 Log in to the lab with following SSH command:
 
